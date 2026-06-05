@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -74,7 +75,8 @@ public class GameController : MonoBehaviour
         {
             // 최종 점수 처리 후 다시 메인 씬으로 이동
             Debug.Log("실패");
-            UnityEditor.EditorApplication.ExitPlaymode();
+            //UnityEditor.EditorApplication.ExitPlaymode();
+            SceneManager.LoadScene("MainScene");
         }
     }
 }

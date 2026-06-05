@@ -18,10 +18,22 @@ public class GameScript : MonoBehaviour
         SceneManager.LoadScene("MainScene");
     }
 
-    // GameScene 이동 버튼
-    public void OnGameSceneBtn()
+    // ColorScene 이동 버튼 - 디자인 게임
+    public void OnColorSceneBtn()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("ColorScene");
+    }
+
+    // 사과 게임
+    public void OnAppleSceneBtn()
+    {
+        SceneManager.LoadScene("ColorScene");
+    }
+
+    // 러닝 게임
+    public void OnRunSceneBtn()
+    {
+        SceneManager.LoadScene("ColorScene");
     }
 
     public void OnCloseBtn()
