@@ -27,13 +27,13 @@ public class GameScript : MonoBehaviour
     // 사과 게임
     public void OnAppleSceneBtn()
     {
-        SceneManager.LoadScene("ColorScene");
+        SceneManager.LoadScene("CatchGameScene");
     }
 
     // 러닝 게임
     public void OnRunSceneBtn()
     {
-        SceneManager.LoadScene("ColorScene");
+        SceneManager.LoadScene("RunningGameScene");
     }
 
     public void OnCloseBtn()
