@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class BlockSpawner : MonoBehaviour
 {
-    [SerializeField] private Block blockPrefeb;  // 브ㄹ록 프리팹
+    [SerializeField] private Block blockPrefeb;  // 블록 프리팹
     [SerializeField] private GridLayoutGroup gridLayout;  // GridLayoutGroup Component
 
     public List<Block> SpawnBlocks(int blockCount)
@@ -12,7 +12,7 @@ public class BlockSpawner : MonoBehaviour
         List<Block> blockList = new List<Block>(blockCount * blockCount);
 
         // 셀 크기
-        int cellSize = 300 - 50 * (blockCount - 2);
+        int cellSize = 130;//300 - 50 * (blockCount - 2);
         gridLayout.cellSize = new Vector2(cellSize, cellSize);
         // 가로에 배치되는 셀 개수
         gridLayout.constraintCount = blockCount;
