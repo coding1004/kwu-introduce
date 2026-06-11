@@ -521,7 +521,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &724032218
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1268,7 +1268,7 @@ GameObject:
   - component: {fileID: 1469378909}
   - component: {fileID: 1469378908}
   m_Layer: 5
-  m_Name: StartGameButton
+  m_Name: NextGameButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1614,7 +1614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 1932521388}
+  m_Material: {fileID: 1956862721}
   m_Color: {r: 0.10849059, g: 1, b: 0.13551599, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -2105,7 +2105,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1850052072}
   m_CullTransparentMesh: 1
---- !u!21 &1932521388
+--- !u!21 &1956862721
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0

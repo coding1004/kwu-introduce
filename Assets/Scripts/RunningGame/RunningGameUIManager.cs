@@ -9,7 +9,6 @@ public class UIManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
-    //[SerializeField] private TextMeshProUGUI speedText;
 
     [Header("Game Over")]
     [SerializeField] private GameObject gameOverPanel;
@@ -32,11 +31,6 @@ public class UIManager : MonoBehaviour
             UpdateScoreText();
             UpdateHighScoreText();
         }
-
-        //if (SpeedManager.Instance != null)
-        //{
-        //    UpdateSpeedText();
-        //}
     }
 
     public void UpdateScoreText()
@@ -49,11 +43,6 @@ public class UIManager : MonoBehaviour
         highScoreText.text = "최장 거리 : " + ScoreManager.Instance.GetHighScore() + "m";
     }
 
-    //public void UpdateSpeedText()
-    //{
-    //    speedText.text = "속도 : " + SpeedManager.Instance.GetCurrentSpeed().ToString("F1");
-    //}
-
     public void ShowGameOver()
     {
         gameOverPanel.SetActive(true);
@@ -61,6 +50,8 @@ public class UIManager : MonoBehaviour
         if (ScoreManager.Instance != null)
         {
             finalScoreText.text = "달린 거리 : " + ScoreManager.Instance.GetCurrentScore() + 'm';
+            ScoreManagerScript.Instance.devScore = ScoreManager.Instance.GetCurrentScore();
+            ScoreManagerScript.Instance.runningGameClear = true;
         }
     }
 

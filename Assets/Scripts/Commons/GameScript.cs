@@ -65,10 +65,10 @@ public class GameScript : MonoBehaviour
         if (!SafeScore(out var sm)) return;
 
         SetButtonState(0, sm.colorGameClear);
-        SetButtonState(1, sm.catchGameClear);
-        SetButtonState(2, sm.runningGameClear);
+        SetButtonState(1, sm.runningGameClear);
+        SetButtonState(2, sm.catchGameClear);
 
-        if (sm.colorGameClear && sm.catchGameClear && sm.runningGameClear)
+        if (sm.colorGameClear && sm.runningGameClear && sm.catchGameClear)
         {
             ClearAllGame();
         }
@@ -121,13 +121,13 @@ public class GameScript : MonoBehaviour
 
     public void OnGamePanel2Btn()
     {
-        if (ScoreManagerScript.Instance?.catchGameClear == true) return;
+        if (ScoreManagerScript.Instance?.runningGameClear == true) return;
         OpenPanel(1);
     }
 
     public void OnGamePanel3Btn()
     {
-        if (ScoreManagerScript.Instance?.runningGameClear == true) return;
+        if (ScoreManagerScript.Instance?.catchGameClear == true) return;
         OpenPanel(2);
     }
 

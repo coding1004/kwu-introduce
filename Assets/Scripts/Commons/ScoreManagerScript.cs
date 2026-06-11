@@ -9,8 +9,8 @@ public class ScoreManagerScript : MonoBehaviour
     public int planScore;
 
     public bool colorGameClear;
-    public bool catchGameClear;
     public bool runningGameClear;
+    public bool catchGameClear;
 
     private void Awake()
     {
@@ -41,7 +41,7 @@ public class ScoreManagerScript : MonoBehaviour
         planScore = 0;
 
         colorGameClear = false;
-        catchGameClear = false;
         runningGameClear = false;
+        catchGameClear = false;
     }
 }
