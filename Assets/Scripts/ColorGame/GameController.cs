@@ -59,7 +59,7 @@ public class GameController : MonoBehaviour
 
         isGameOver = false;
         totalScore = 0;
-        totalScoreText.text = $"점수\n{totalScore}";
+        totalScoreText.text = $"Score : {totalScore}";
 
         resultPanel.SetActive(false);
         timeSlider.maxValue = maxTime;
@@ -92,6 +92,8 @@ public class GameController : MonoBehaviour
         resultPanel.SetActive(true);
 
         scoreText.text = $"점수 : {totalScore}";
+        ScoreManagerScript.Instance.designScore = totalScore;
+        ScoreManagerScript.Instance.colorGameClear = true;
 
         sfxSource.PlayOneShot(gameOverSound);
     }
@@ -184,7 +186,7 @@ public class GameController : MonoBehaviour
         {
             // 색상 재 선택
             totalScore += 10;
-            totalScoreText.text = $"점수\n{totalScore}";
+            totalScoreText.text = $"Score : {totalScore}";
             SoundCorrect();
             SetColors();
         }
