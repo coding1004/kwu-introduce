@@ -2563,7 +2563,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UISoundManager
   sfxSource: {fileID: 1254907011}
   btnClickSound: {fileID: 8300000, guid: f6fa03999a0597a4fa8cdf6619791c13, type: 3}
-  btnHoverSound: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
+  btnHoverSound: {fileID: 8300000, guid: 09f8dc09efedc414784e7ba556669245, type: 3}
 --- !u!1 &1639213200
 GameObject:
   m_ObjectHideFlags: 0
