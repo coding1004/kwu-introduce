@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     [Header("Spawner")]
     [SerializeField] private ObstacleSpawner obstacleSpawner;
 
+    [Header("Rule")]
+    [SerializeField] private GameObject rulePanel;
+
     [Header("Countdown")]
     [SerializeField] private GameObject countdownPanel;
     [SerializeField] private TextMeshProUGUI countdownText;
@@ -31,6 +34,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Color numberColor = Color.yellow;
     [SerializeField] private Color startColor = Color.green;
 
+    [Header("Sound")]
+    [SerializeField] private AudioSource bgmSource;
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip countdownSound;
+    [SerializeField] private AudioClip gameOverSound;
+
+
     private GameState currentState = GameState.Ready;
 
     private void Awake()
@@ -43,12 +53,47 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        PrepareGame();
+
+        if (bgmSource != null)
+        {
+            bgmSource.Play();
+        }
+
+        if (rulePanel != null)
+        {
+            rulePanel.SetActive(true);
+        }
+
+        if (countdownPanel != null)
+        {
+            countdownPanel.SetActive(false);
+        }
+    }
+
+    public void OnCloseBtn()
+    {
+        if (rulePanel != null)
+        {
+            rulePanel.SetActive(false);
+        }
+
         StartCoroutine(CountdownRoutine());
     }
 
     private IEnumerator CountdownRoutine()
     {
-        PrepareGame();
+        if (countdownPanel != null)
+        {
+            countdownPanel.SetActive(true);
+        }
+
+        // 카운트다운 사운드 1회 재생
+        if (sfxSource != null && countdownSound != null)
+        {
+            sfxSource.clip = countdownSound;
+            sfxSource.Play();
+        }
 
         // Scene이 처음 화면에 표시될 때까지 숫자를 숨깁니다.
         if (countdownText != null)
@@ -237,6 +282,12 @@ public class GameManager : MonoBehaviour
         }
 
         currentState = GameState.GameOver;
+
+        if (bgmSource != null)
+            bgmSource.Stop();
+
+        if (sfxSource != null && gameOverSound != null)
+            sfxSource.PlayOneShot(gameOverSound);
 
         if (ScoreManager.Instance != null)
         {

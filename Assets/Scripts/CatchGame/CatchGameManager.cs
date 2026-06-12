@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public enum CatchGameState
@@ -19,9 +20,11 @@ public class CatchGameManager : MonoBehaviour
 
     [Header("HUD")]
     [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI finalScoreText;
+
+    [Header("Rule")]
+    [SerializeField] private GameObject rulePanel;
 
     [Header("Countdown")]
     [SerializeField] private GameObject countdownPanel;
@@ -44,6 +47,47 @@ public class CatchGameManager : MonoBehaviour
     [SerializeField] private float spawnIntervalDecrease = 0.08f;
     [SerializeField] private float minSpawnInterval = 0.45f;
 
+    [Header("Lives")]
+    [SerializeField] private int maxLives = 3;
+    [SerializeField] private Image[] lifeImages;
+    [SerializeField] private Sprite lifeImage;
+    [SerializeField] private Sprite emptyLifeImage;
+
+    [Header("Life Lost Animation")]
+    [SerializeField] private float lifeAnimationDuration = 0.4f;
+    [SerializeField] private float lifePunchScale = 1.5f;
+    [SerializeField] private float lifeShakeAngle = 15f;
+    [SerializeField] private Color lifeDamageColor = Color.red;
+
+    [Header("Score Animation")]
+    [SerializeField] private float scoreAnimationDuration = 0.25f;
+    [SerializeField] private float scorePunchScale = 1.4f;
+    [SerializeField] private Color scoreGainColor = Color.yellow;
+
+    private Coroutine scoreAnimationRoutine;
+
+
+    [Header("Score Popup")]
+    [SerializeField] private ScorePopup scorePopupPrefab;
+    [SerializeField] private RectTransform popupContainer;
+    [SerializeField] private Canvas gameCanvas;
+
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip plusCatchSound;
+    [SerializeField] private AudioClip minusCatchSound;
+    [SerializeField] private AudioClip countdownSound;
+    [SerializeField] private AudioClip gameOverSound;
+
+    [SerializeField] private AudioSource bgmSource;
+    
+    private int currentLives;
+
+
+
+
+
     public bool IsGameOver =>
         currentState == CatchGameState.GameOver;
 
@@ -61,6 +105,31 @@ public class CatchGameManager : MonoBehaviour
 
     private void Start()
     {
+        PrepareGame();
+
+        if (bgmSource != null)
+        {
+            bgmSource.Play();
+        }
+
+        if (rulePanel != null)
+        {
+            rulePanel.SetActive(true);
+        }
+
+        if (countdownPanel != null)
+        {
+            countdownPanel.SetActive(false);
+        }
+    }
+
+    public void OnCloseBtn()
+    {
+        if (rulePanel != null)
+        {
+            rulePanel.SetActive(false);
+        }
+
         StartCoroutine(CountdownRoutine());
     }
 
@@ -85,7 +154,17 @@ public class CatchGameManager : MonoBehaviour
 
     private IEnumerator CountdownRoutine()
     {
-        PrepareGame();
+        if (countdownPanel != null)
+        {
+            countdownPanel.SetActive(true);
+        }
+
+        // 카운트다운 사운드 1회 재생
+        if (audioSource != null && countdownSound != null)
+        {
+            audioSource.clip = countdownSound;
+            audioSource.Play();
+        }
 
         // 첫 화면이 그려질 때까지 숫자를 숨깁니다.
         if (countdownText != null)
@@ -133,6 +212,7 @@ public class CatchGameManager : MonoBehaviour
         score = 0;
         level = 1;
         elapsedTime = 0f;
+        currentLives = maxLives;
 
         if (objectSpawner != null)
         {
@@ -146,7 +226,7 @@ public class CatchGameManager : MonoBehaviour
 
         if (countdownPanel != null)
         {
-            countdownPanel.SetActive(true);
+            countdownPanel.SetActive(false);
         }
 
         UpdateUI();
@@ -245,7 +325,204 @@ public class CatchGameManager : MonoBehaviour
 
         score += amount;
         UpdateUI();
+
+        if (scoreAnimationRoutine != null)
+        {
+            StopCoroutine(scoreAnimationRoutine);
+        }
+
+        scoreAnimationRoutine =
+            StartCoroutine(AnimateScoreText(amount));
     }
+
+    private IEnumerator AnimateScoreText(int amount)
+    {
+        if (scoreText == null)
+        {
+            yield break;
+        }
+
+        RectTransform textTransform = scoreText.rectTransform;
+
+        Vector3 originalScale = textTransform.localScale;
+        Vector2 originalPosition = textTransform.anchoredPosition;
+        Color originalColor = scoreText.color;
+
+        float elapsed = 0f;
+
+        while (elapsed < scoreAnimationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float progress = Mathf.Clamp01(
+                elapsed / scoreAnimationDuration
+            );
+
+            // 0 → 1 → 0 형태로 커졌다가 돌아옵니다.
+            float punch = Mathf.Sin(progress * Mathf.PI);
+            float scale = Mathf.Lerp(1f, scorePunchScale, punch);
+
+            textTransform.localScale = originalScale * scale;
+
+            // 위치를 고정하여 튕기거나 밀리지 않게 합니다.
+            textTransform.anchoredPosition = originalPosition;
+
+            scoreText.color = Color.Lerp(
+                scoreGainColor,
+                originalColor,
+                progress
+            );
+
+            yield return null;
+        }
+
+        textTransform.localScale = originalScale;
+        textTransform.anchoredPosition = originalPosition;
+        scoreText.color = originalColor;
+
+        scoreAnimationRoutine = null;
+    }
+
+    public void ShowScorePopup(int amount, Vector3 worldPosition)
+    {
+        if (scorePopupPrefab == null ||
+            popupContainer == null ||
+            gameCanvas == null)
+        {
+            return;
+        }
+
+        Vector2 screenPosition =
+            Camera.main.WorldToScreenPoint(worldPosition);
+
+        Camera uiCamera = gameCanvas.renderMode ==
+            RenderMode.ScreenSpaceOverlay
+                ? null
+                : gameCanvas.worldCamera;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            popupContainer,
+            screenPosition,
+            uiCamera,
+            out Vector2 localPosition
+        );
+
+        ScorePopup popup = Instantiate(
+            scorePopupPrefab,
+            popupContainer
+        );
+
+        popup.GetComponent<RectTransform>().anchoredPosition =
+            localPosition;
+
+        popup.Play(amount);
+    }
+
+
+    public void LoseLife()
+    {
+        if (!IsPlaying())
+        {
+            return;
+        }
+
+        currentLives = Mathf.Max(0, currentLives - 1);
+
+        // 감소한 목숨 위치입니다.
+        int lostLifeIndex = currentLives;
+
+        UpdateUI();
+
+        if (lostLifeIndex >= 0 &&
+            lostLifeIndex < lifeImages.Length &&
+            lifeImages[lostLifeIndex] != null)
+        {
+            StartCoroutine(
+                AnimateLostLife(lifeImages[lostLifeIndex])
+            );
+        }
+
+        if (currentLives <= 0)
+        {
+            GameOver();
+        }
+    }
+
+
+
+    private IEnumerator AnimateLostLife(Image lifeImageUI)
+    {
+        RectTransform heartTransform = lifeImageUI.rectTransform;
+
+        Vector3 originalScale = Vector3.one;
+        Quaternion originalRotation = Quaternion.identity;
+        Color originalColor = Color.white;
+
+        float elapsed = 0f;
+
+        lifeImageUI.color = lifeDamageColor;
+
+        while (elapsed < lifeAnimationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float progress = Mathf.Clamp01(
+                elapsed / lifeAnimationDuration
+            );
+
+            // 처음에는 커지고, 마지막에는 원래 크기로 돌아옵니다.
+            float punch = Mathf.Sin(progress * Mathf.PI);
+
+            float scale = Mathf.Lerp(
+                1f,
+                lifePunchScale,
+                punch
+            );
+
+            // 좌우로 빠르게 흔듭니다.
+            float angle =
+                Mathf.Sin(progress * Mathf.PI * 6f) *
+                lifeShakeAngle *
+                (1f - progress);
+
+            heartTransform.localScale =
+                originalScale * scale;
+
+            heartTransform.localRotation =
+                Quaternion.Euler(0f, 0f, angle);
+
+            // 빨간색에서 원래 색으로 돌아옵니다.
+            lifeImageUI.color = Color.Lerp(
+                lifeDamageColor,
+                originalColor,
+                progress
+            );
+
+            yield return null;
+        }
+
+        heartTransform.localScale = originalScale;
+        heartTransform.localRotation = originalRotation;
+        lifeImageUI.color = originalColor;
+    }
+
+
+    public void PlayPlusCatchSound()
+    {
+        if (audioSource != null && plusCatchSound != null)
+        {
+            audioSource.PlayOneShot(plusCatchSound);
+        }
+    }
+
+    public void PlayMinusCatchSound()
+    {
+        if (audioSource != null && minusCatchSound != null)
+        {
+            audioSource.PlayOneShot(minusCatchSound);
+        }
+    }
+
 
     public void GameOver()
     {
@@ -259,6 +536,18 @@ public class CatchGameManager : MonoBehaviour
         if (objectSpawner != null)
         {
             objectSpawner.StopSpawning();
+        }
+
+        // BGM 정지
+        if (bgmSource != null)
+        {
+            bgmSource.Stop();
+        }
+
+        // 게임오버 사운드 재생
+        if (audioSource != null && gameOverSound != null)
+        {
+            audioSource.PlayOneShot(gameOverSound);
         }
 
         if (gameOverPanel != null)
@@ -308,9 +597,26 @@ public class CatchGameManager : MonoBehaviour
             scoreText.text = "점수 : " + score;
         }
 
-        if (levelText != null)
+        for (int i = 0; i < lifeImages.Length; i++)
         {
-            levelText.text = "레벨 : " + level;
+            if (lifeImages[i] == null)
+            {
+                continue;
+            }
+
+            // 남은 목숨은 채워진 하트,
+            // 소진된 목숨은 빈 하트로 표시합니다.
+            if (i < currentLives)
+            {
+                lifeImages[i].sprite = lifeImage;
+            }
+            else
+            {
+                lifeImages[i].sprite = emptyLifeImage;
+            }
+
+            lifeImages[i].enabled = true;
+            lifeImages[i].preserveAspect = true;
         }
     }
 }

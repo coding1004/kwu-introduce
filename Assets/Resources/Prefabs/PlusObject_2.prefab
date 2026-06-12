@@ -159,7 +159,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 19.48, y: 17.68}
+    oldSize: {x: 17.42, y: 17.12}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -180,5 +180,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CatchFallingObject
   catchScore: 150
-  gameOverWhenMissed: 1
+  gameOverWhenMissed: 0
   speedMultiplier: 1.2
+  damagesPlayerWhenCaught: 0

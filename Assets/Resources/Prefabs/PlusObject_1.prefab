@@ -134,7 +134,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CatchFallingObject
   catchScore: 100
-  gameOverWhenMissed: 1
+  gameOverWhenMissed: 0
+  speedMultiplier: 1
+  damagesPlayerWhenCaught: 0
 --- !u!61 &1759491617931143454
 BoxCollider2D:
   m_ObjectHideFlags: 0
