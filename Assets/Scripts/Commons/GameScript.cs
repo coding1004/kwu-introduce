@@ -9,8 +9,6 @@ public class GameScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] buttonTexts;
     [SerializeField] private Image[] stampImages;
     [SerializeField] private Slider[] scoreSliders;
-
-    [SerializeField] private GameObject[] gamePanel;
     [SerializeField] private GameObject clearPopupPanel;
 
     [SerializeField] private AudioSource bgmSource;
@@ -24,10 +22,6 @@ public class GameScript : MonoBehaviour
             bgmSource.Play();
         }
 
-        foreach (var panel in gamePanel)
-        {
-            panel.SetActive(false);
-        }
         clearPopupPanel.SetActive(false);
     }
 
@@ -50,7 +44,7 @@ public class GameScript : MonoBehaviour
 
     private void SetButtonState(int index, bool isClear)
     {
-        // 버튼 활성/비활성
+        // 버튼 활성
         gameButtons[index].interactable = !isClear;
         stampImages[index].gameObject.SetActive(isClear);
 
@@ -111,35 +105,8 @@ public class GameScript : MonoBehaviour
     public void OnStartSceneBtn() => SceneManager.LoadScene("StartScene");
     public void OnColorSceneBtn() => SceneManager.LoadScene("ColorScene");
     public void OnCatchGameSceneBtn() => SceneManager.LoadScene("CatchGameScene");
-    public void OnRunSceneBtn() => SceneManager.LoadScene("RunningGameScene");
-
-    public void OnGamePanel1Btn()
-    {
-        if (ScoreManagerScript.Instance?.colorGameClear == true) return;
-        OpenPanel(0);
-    }
-
-    public void OnGamePanel2Btn()
-    {
-        if (ScoreManagerScript.Instance?.runningGameClear == true) return;
-        OpenPanel(1);
-    }
-
-    public void OnGamePanel3Btn()
-    {
-        if (ScoreManagerScript.Instance?.catchGameClear == true) return;
-        OpenPanel(2);
-    }
-
-    private void OpenPanel(int index)
-    {
-        foreach (var panel in gamePanel)
-        {
-            panel.SetActive(false);
-        }
-
-        gamePanel[index].SetActive(true);
-    }
+    public void OnRunningGameSceneBtn() => SceneManager.LoadScene("RunningGameScene");
+    public void OnResultSceneBtn() => SceneManager.LoadScene("ResultScene");
 
     private void ClearAllGame()
     {
@@ -147,10 +114,5 @@ public class GameScript : MonoBehaviour
             bgmSource.Stop();
 
         clearPopupPanel.SetActive(true);
-    }
-
-    public void OnResultSceneBtn()
-    {
-        SceneManager.LoadScene("ResultScene");
     }
 }
